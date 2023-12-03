@@ -17,7 +17,7 @@ router.get("/", async (req, res, next) => {
 router.get("/:tweetId", isValidId, async (req, res, next) => {
   try {
     const { tweetId } = req.params;
-    const result = await Contact.findById(tweetId);
+    const result = await Tweet.findById(tweetId);
     if (!result) {
       throw HttpError(404, "Not found");
     }
