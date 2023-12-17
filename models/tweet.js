@@ -4,10 +4,10 @@ const Joi = require("joi");
 
 const tweetSchema = new Schema(
   {
-    name: {
-      type: String,
-      required: [true, "Set your name"],
-    },
+    // name: {
+    //   type: String,
+    //   required: [true, "Set your name"],
+    // },
     tweet: {
       type: String,
     },
@@ -18,7 +18,7 @@ const tweetSchema = new Schema(
 tweetSchema.post("save", handleMongooseError);
 
 const addSchema = Joi.object({
-  name: Joi.string().required(),
+  // name: Joi.string().required(),
   tweet: Joi.string().required(),
 });
 
