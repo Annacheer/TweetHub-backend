@@ -1,5 +1,5 @@
-const { Tweet, schemas } = require("../../models/tweet");
-const { HttpError, ctrlWrapper } = require("../../helpers");
+const { Tweet, schemas } = require("../models/tweet");
+const { HttpError, ctrlWrapper } = require("../helpers");
 
 const getAll = async (req, res) => {
   const { _id: owner } = req.user;
@@ -9,7 +9,7 @@ const getAll = async (req, res) => {
   const result = await Tweet.find({ owner })
     .skip(skip)
     .limit(limit)
-    .populate("owner", "email");
+    .populate("owner", "name email");
   res.json(result);
 };
 
@@ -24,18 +24,24 @@ const getById = async (req, res) => {
 };
 
 const add = async (req, res) => {
-  if (req.body.tweet === undefined) {
-    return res.status(400).json({ message: "missing required tweet field" });
-  }
+  // if (req.body.tweet === undefined) {
+  //   return res.status(400).json({ message: "missing required tweet field" });
+  // }
   const { _id: owner } = req.user;
-  const result = await Tweet.create({ ...req.body, owner });
+  const newTweet = new Tweet({ tweet: req.body.tweet, owner });
+  await newTweet.save();
+  const populatedTweet = await newTweet.populate("owner", "name");
+  const result = {
+    userName: populatedTweet.owner.name, // Send the user's name along with the tweet
+    tweet: populatedTweet.tweet,
+  };
   res.status(201).json(result);
 };
 
 const updateById = async (req, res) => {
-  if (Object.keys(req.body).length === 0) {
-    return res.status(400).json({ message: "missing fields" });
-  }
+  // if (Object.keys(req.body).length === 0) {
+  //   return res.status(400).json({ message: "missing field" });
+  // }
   const { tweetId } = req.params;
   const { _id: owner } = req.user;
   const updatedTweet = await Tweet.findOneAndUpdate(

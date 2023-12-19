@@ -3,16 +3,23 @@ const logger = require("morgan");
 const cors = require("cors");
 const tweetsRouter = require("./routes/api/tweets");
 const dotenv = require("dotenv");
+const authRouter = require("./routes/api/auth");
+const upload = require("./middlewares/multer-config");
+const fs = require("fs/promises");
+const path = require("path");
+const { nanoid } = require("nanoid");
 
 dotenv.config();
 const app = express();
 
 const formatsLogger = app.get("env") === "development" ? "dev" : "short";
 
-app.use(cors());
 app.use(logger(formatsLogger));
+app.use(cors());
 app.use(express.json());
+app.use(express.static("public"));
 
+app.use("/users", authRouter);
 app.use("/api/tweets", tweetsRouter);
 
 app.use((req, res) => {
