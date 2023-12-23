@@ -1,3 +1,55 @@
+Express
+
+Express is a package for creating web servers - [Express on npm](https://www.npmjs.com/package/express).
+
+A web server is a part of the backend that receives HTTP requests and sends responses.
+
+To create a web server, install the package using `npm i express`; then, import Express into the `app.js` file.
+To create a web server, call Express as a function - `app` will be our web server.
+Next, it needs to be launched - call its `listen` method and pass the port number (like 3000) as the first argument.
+If you are developing both backend and frontend simultaneously, ensure the ports are different.
+To confirm it's running, as a second argument to `listen`, pass a callback function that will execute if the server successfully starts, and you'll see a "Server is running" message.
+
+To define a route, write the server name - `app`, call the required method - `get`, write the route's name (like "/" for the homepage) as the first argument, and a callback function as the second. This function will execute when the route is found.
+Express passes two arguments to this callback function:
+
+1. A request object containing all information about the incoming request.
+2. A response object that allows you to set up and send the response.
+   Send the response in JSON format using `res.json()`.
+
+To check routes, use Postman - [Postman website](https://www.postman.com/) (it's better to download and install it).
+
+Middleware
+
+For each request, there are specific actions to perform, usually implemented through middleware. Middleware acts as a connective tissue between applications, data, and users.
+
+To add middleware in Express, use the `use` method in the web server `app`.
+You can pass a route or a function as the first argument, which will execute for any request on any route.
+Once Express finds a suitable function, it executes it and stops looking further.
+Middleware is an intermediate stage, a function that does something and then continues to look for the right route. Therefore, pass the `next()` function as the third argument in the `use` method, and if called, Express will continue searching.
+
+To write data to a file, use the `fs` package with promises, allowing all handler functions to be asynchronous.
+The challenge with asynchronous functions is that they return promises, and `res.json()` isn't a return statement but a way to send responses to the frontend; promises won't be sent there.
+
+How does Express work? A request comes in, and Express iterates through all addresses from top to bottom. If a request comes to an address that isn't listed, Express will reach `app.use(req, res) =>` and send `res.status(404).json({ message: "Not found" })`. This is also middleware - handling requests for non-existent addresses.
+
+The address of our server (or website) is `http://localhost:3000`. All servers are configured to accept requests from the address they're running on. If a request comes from a different address, the server will automatically reject it. Running frontend and backend simultaneously means the addresses will be different (e.g., 3000 and 3001).
+A CORS (Cross-Origin Request) is a request from one domain (server) to another with different addresses. You need to allow cross-domain requests, at least during development.
+This can be resolved by installing the `cors` package, which provides the necessary middleware - `npm i cors`.
+In `app.js`, import `cors` (`const cors = require("cors");`), call the `cors` function to get the middleware.
+Using `app.use(cors());`, any request will go through this middleware, and if it comes from a different domain, this middleware will allow it, making Express accept it.
+
+Routes are moved to a separate file - create `routes/api/tweets.js`, import Express into it. Instead of calling Express as a function (since the server is already created in `app.js`), call its `Router` method and write all routes related to tweets. Export it using `module.exports = router;`.
+So, you've created not a web server, but a part of it.
+
+Import this part into `app.js` (`const tweetsRouter = require("./routes/api/tweets");`).
+Now tell our web server where to find all routes starting with "/api/tweets" - `app.use("/api/tweets", tweetsRouter);`.
+
+In `package.json`, it's specified that we run not `app.js`, but `server.js` - `"start": "cross-env NODE_ENV=production node ./server.js"`.
+In `server.js`, import `app` (server) (`const app = require("./app");`) and launch `app` (`app.listen(PORT);`).
+
+In `app.js`, `const logger = require("morgan");` is middleware that logs request information to the console, sometimes necessary for debugging.
+
 Adding an Avatar
 
 1. `npm install --save multer`

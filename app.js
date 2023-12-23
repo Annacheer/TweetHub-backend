@@ -4,10 +4,6 @@ const cors = require("cors");
 const tweetsRouter = require("./routes/api/tweets");
 const dotenv = require("dotenv");
 const authRouter = require("./routes/api/auth");
-const upload = require("./middlewares/multer-config");
-const fs = require("fs/promises");
-const path = require("path");
-const { nanoid } = require("nanoid");
 
 dotenv.config();
 const app = express();
